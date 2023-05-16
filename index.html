@@ -1,0 +1,98 @@
+<html>
+  <head>
+    <title>Line Test</title>
+  </head>
+  <body>    
+    <canvas id="myChart" width="500" height="150"></canvas>    
+  </body>
+</html>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  function getRandomValue(count){
+    var data = [];
+    for(var i=0;i<count;i++){
+      var randomNumber = Math.floor(Math.random()*100)+1;
+      data.push(randomNumber);
+    }
+    return data
+  }
+
+  function getRandomDate(start, end) {
+    var startDate = start.getTime();
+    var endDate = end.getTime();
+    var randomTime = Math.random() * (endDate - startDate) + startDate;
+    return new Date(randomTime);
+  }
+
+  var dayList = [];
+  var oneData = getRandomValue(5);
+  var twoData = getRandomValue(5);
+
+  var startDate = new Date("2023-01-01");
+  var endDate = new Date("2023-12-31"); 
+
+  var randomDate = getRandomDate(startDate, endDate);
+  var fourDayAgo = new Date(randomDate.getTime() - 4 * 24 * 60 * 60 * 1000); 
+
+  for (var date = fourDayAgo; date <= randomDate; date.setDate(date.getDate() + 1)){
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    dayList.push(month + "월" + day + "일"); 
+    oneData.push(day);
+    twoData.push(day);
+  }
+
+  const footer = (tooltipItems) => {
+
+    const oneData = tooltipItems[0].parsed.y;
+    const twoData = tooltipItems[1].parsed.y;
+    const difference = Math.max(oneData, twoData) - Math.min(oneData, twoData);    
+
+    return '비정합: ' + difference;
+  };
+
+  const data = {
+      labels: dayList,
+      datasets: [
+        {
+          data: oneData,
+          borderColor: 'rgba(255, 99, 132, 1)',          
+          fill:true,
+          borderWidth: 4,
+          label: 'oneData'
+        },
+        {
+          data: twoData,
+          borderColor: 'rgba(54, 162, 235, 1)',          
+          fill:true,
+          borderWidth: 4,
+          label: 'twoData'
+        }
+      ]                    
+    }
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+  const myChart = new Chart(ctx, {
+    type: 'line',
+    data: data,
+    options: {
+      interaction: {
+          intersect: false,
+          mode: 'index',
+      } ,     
+      plugins: {              
+        legend: 
+        {
+          display: true,
+          position: 'right',
+        },
+        tooltip: {
+          callbacks:{
+            footer: footer,
+          }
+        }        
+      }
+    }
+  });
+</script>
